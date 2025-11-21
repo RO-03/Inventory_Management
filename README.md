@@ -78,7 +78,7 @@ Open **MySQL Workbench** and run the script:
 
 #### Clone the Repository
 ```bash
-git clone https://github.com/your-repo/AdventureWorks-Warehouse-App
+git clone https://github.com/RO-03/Inventory_Management.git
 cd AdventureWorks-Warehouse-App
 ````
 
