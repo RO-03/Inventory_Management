@@ -1,0 +1,269 @@
+{% extends "base.html" %} {% set active_page = 'warehouse' %} {% block title
+%}Warehouse - AdventureWorks{% endblock %} {% block content %}
+<h2>Warehouse Tools</h2>
+<!-- (All the tool cards are unchanged) -->
+<div style="display: flex; gap: 20px">
+  <!-- Feature 10: Search Products -->
+  <div class="card" style="flex: 1">
+    <div class="card-header">Tool: Search Products</div>
+    <div class="card-content">
+      <form action="{{ url_for('search_page') }}" method="GET">
+        <div class="form-group">
+          <label for="search_term">Product Name</label>
+          <input
+            type="text"
+            id="search_term"
+            name="search_term"
+            placeholder="e.g., Fork"
+            required
+          />
+        </div>
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Feature 7: Get Product Stock -->
+  <div class="card" style="flex: 1">
+    <div class="card-header">Tool: Check Product Stock (Total)</div>
+    <div class="card-content">
+      <form method="POST">
+        <input type="hidden" name="form_name" value="get_stock_form" />
+        <div class="form-group">
+          <label for="product_id_stock">Product ID</label>
+          <input
+            type="number"
+            id="product_id_stock"
+            name="product_id_stock"
+            placeholder="e.g., 776"
+            required
+          />
+        </div>
+        <button type="submit">Get Total Stock</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Feature 12: Trigger Test (Update Price) -->
+<div class="card">
+  <div class="card-header">
+    Tool: Update Product Price (Tests Audit Trigger)
+  </div>
+  <div class="card-content">
+    <form method="POST">
+      <input type="hidden" name="form_name" value="update_price_form" />
+      <div style="display: flex; gap: 20px">
+        <div class="form-group" style="flex: 1">
+          <label for="product_id">Product ID</label>
+          <input
+            type="number"
+            id="product_id"
+            name="product_id"
+            placeholder="e.g., 776"
+            required
+          />
+        </div>
+        <div class="form-group" style="flex: 1">
+          <label for="new_price">New List Price</label>
+          <input
+            type="number"
+            step="0.01"
+            id="new_price"
+            name="new_price"
+            placeholder="e.g., 2500.00"
+            required
+          />
+        </div>
+      </div>
+      <button type="submit">Update Price</button>
+    </form>
+  </div>
+</div>
+
+<!-- Feature 12 (Part B): Audit Log Viewer -->
+<div class="card">
+  <div class="card-header">Report: Price Change Audit Log (Last 5)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Audit ID</th>
+        <th>Product ID</th>
+        <th>Old Price</th>
+        <th>New Price</th>
+        <th>User</th>
+        <th>Changed At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if audit_log_data is not none %} {% for row in audit_log_data %}
+      <tr>
+        <td class="numeric">{{ row.AuditID }}</td>
+        <td class="numeric">{{ row.ProductID }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.OldListPrice) }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.NewListPrice) }}</td>
+        <td>{{ row.ChangedByUser }}</td>
+        <td>{{ row.ChangedAt }}</td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="6">
+          Could not load audit log. (Is the 'product_price_audit' table
+          created?)
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Warehouse Reports</h2>
+
+<!-- *** REPORT 1 *** -->
+<!-- Feature 1: Total Inventory Value (Top 20) -->
+<div class="card">
+  <div class="card-header">
+    Report 1: Top 20 Products by Inventory Value (All Locations)
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>List Price</th>
+        <th>Total Stock</th>
+        <th>Total Value (Cost)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if inventory_value_data %} {% for row in inventory_value_data %}
+      <tr>
+        <td class="numeric">{{ row.ProductID }}</td>
+        <td>{{ row.Name }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.ListPrice) }}</td>
+        <td class="numeric">{{ row.TotalStock }}</td>
+        <td class="numeric currency">
+          {{ "%.2f"|format(row.TotalInventoryValue) }}
+        </td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="5">No inventory data found.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<!-- *** REPORT 2 *** -->
+<!-- ALL Items in Main Warehouse Stock -->
+<div class="card">
+  <div class="card-header">
+    Report 2: ALL Items in Main Warehouse Stock (Location 1)
+  </div>
+  <!-- *** ADDED SCROLLING WRAPPER *** -->
+  <div style="max-height: 400px; overflow-y: auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>List Price</th>
+          <th>Quantity in Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if main_warehouse_stock %} {% for row in main_warehouse_stock %}
+        <tr>
+          <td class="numeric">{{ row.ProductID }}</td>
+          <td>{{ row.Name }}</td>
+          <td class="numeric currency">{{ "%.2f"|format(row.ListPrice) }}</td>
+          <td class="numeric">{{ row.Quantity }}</td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="4">
+            Main warehouse is empty or data could not be loaded.
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <!-- End scrollable div -->
+</div>
+
+<!-- *** REPORT 3 *** -->
+<!-- Feature 4: Products Never Sold -->
+<div class="card">
+  <div class="card-header">Report 3: Products Never Sold</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>List Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if unsold_products_data %} {% for row in unsold_products_data %}
+      <tr>
+        <td class="numeric">{{ row.ProductID }}</td>
+        <td>{{ row.Name }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.ListPrice) }}</td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="3">No unsold products found.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<!-- *** REPORT 4 *** -->
+<!-- Feature 6: Live Inventory Location (View) -->
+<div class="card">
+  <div class="card-header">
+    Report 4: Live Inventory Location (All Items from View)
+  </div>
+  <div style="max-height: 400px; overflow-y: auto">
+    <!-- Made scrollable -->
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Location</th>
+          <th>Shelf</th>
+          <th>Bin</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if locations_data is not none %} {% if locations_data %} {% for row
+        in locations_data %}
+        <tr>
+          <td>{{ row.ProductName }}</td>
+          <td>{{ row.LocationName }}</td>
+          <td class="numeric">{{ row.Shelf }}</td>
+          <td class="numeric">{{ row.Bin }}</td>
+          <td class="numeric">{{ row.Quantity }}</td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="5">No location data found in the view.</td>
+        </tr>
+        {% endif %} {% else %}
+        <tr>
+          <td colspan="5">
+            Could not load location data. (Is the 'vw_ProductLocations' view
+            created?)
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <!-- End scrollable div -->
+</div>
+{% endblock %}

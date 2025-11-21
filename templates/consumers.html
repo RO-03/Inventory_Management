@@ -1,0 +1,103 @@
+{% extends "base.html" %} {% set active_page = 'consumers' %} {% block title
+%}Consumers - AdventureWorks{% endblock %} {% block content %}
+<h2>Consumer Tools</h2>
+<div style="display: flex; gap: 20px">
+  <div class="card" style="flex: 1">
+    <div class="card-header">Tool: Get Average Product Delivery Time</div>
+    <div class="card-content">
+      <form method="POST">
+        <input type="hidden" name="form_name" value="product_delivery_form" />
+        <div class="form-group">
+          <label for="product_id_delivery">Product ID</label>
+          <input
+            type="number"
+            id="product_id_delivery"
+            name="product_id_delivery"
+            placeholder="e.g., 776"
+            required
+          />
+        </div>
+        <button type="submit">Get Delivery Time</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<h2>Consumer Reports</h2>
+
+<div class="card">
+  <div class="card-header">Report: Top 10 Customer Leaderboard</div>
+  <div style="max-height: 400px; overflow-y: auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Total Spending</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if top_customers_data %} {% for row in top_customers_data %}
+        <tr>
+          <td class="numeric">{{ row.CustomerRank }}</td>
+          <td>{{ row.FirstName }}</td>
+          <td>{{ row.LastName }}</td>
+          <td class="numeric currency">
+            {{ "%.2f"|format(row.TotalSpending) }}
+          </td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="4">No customer data found.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Reference: Sales History (Last 100)</div>
+  <div style="max-height: 400px; overflow-y: auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Customer ID</th>
+          <th>Customer Name</th>
+          <th>Product ID</th>
+          <th>Product Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if sales_history_data %} {% for item in sales_history_data %}
+        <tr>
+          <td class="numeric">{{ item.CustomerID }}</td>
+          <td>{{ item.FirstName }} {{ item.LastName }}</td>
+          <td class="numeric">{{ item.ProductID }}</td>
+          <td>{{ item.ProductName }}</td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="4">No sales history found.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Report: Overall Sales Performance</div>
+  <div class="card-content">
+    {% if avg_shipping_data and avg_shipping_data.AvgLeadTime %}
+    <h3>
+      Average Shipping Lead Time:
+      <strong>{{ "%.2f"|format(avg_shipping_data.AvgLeadTime) }} days</strong>
+    </h3>
+    {% else %}
+    <p>No shipping data available.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

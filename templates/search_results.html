@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% set active_page = 'warehouse' %} {% block title
+%}Search Results - AdventureWorks{% endblock %} {% block content %}
+<h2>Search Results for: "{{ search_term }}"</h2>
+
+<p><a href="{{ url_for('warehouse_page') }}">&larr; Back to Warehouse</a></p>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>List Price</th>
+        <th>Standard Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if results %} {% for row in results %}
+      <tr>
+        <td class="numeric">{{ row.ProductID }}</td>
+        <td>{{ row.Name }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.ListPrice) }}</td>
+        <td class="numeric currency">{{ "%.2f"|format(row.StandardCost) }}</td>
+      </tr>
+      {% endfor %} {% else %}
+      <tr>
+        <td colspan="4">No products found matching that term.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

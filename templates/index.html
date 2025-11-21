@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% set active_page = 'home' %} {% block title
+%}Welcome - AdventureWorks{% endblock %} {% block content %}
+<h2>Welcome to the Dashboard</h2>
+<div class="card">
+  <div class="card-content">
+    <p>
+      Welcome to the AdventureWorks Retail Dashboard. This application is
+      powered by a MySQL database and provides key insights into the three
+      pillars of our business.
+    </p>
+    <p>Please select a page from the navigation menu to begin:</p>
+    <ul>
+      <li style="margin-top: 10px">
+        <b>Vendors:</b> Analyze purchasing data from our suppliers.
+      </li>
+      <li style="margin-top: 10px">
+        <b>Item Warehouse:</b> View live product inventory, manage prices, and
+        search stock.
+      </li>
+      <li style="margin-top: 10px">
+        <b>Consumers:</b> See customer sales data and performance metrics.
+      </li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
